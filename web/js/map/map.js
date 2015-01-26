@@ -1,10 +1,11 @@
 var googleMap = null;
+var showInfoWindow = null;
 
 function init_map() {
     googleMap = null;
 
     var mapOptions = {
-        zoom: 16,
+        zoom: 14,
         center: new google.maps.LatLng(36.565842, 136.658941),
         mapTypeId: google.maps.MapTypeId.ROADMAP,
     };
@@ -16,11 +17,13 @@ function init_map() {
 
 function load_spots() {
     $.ajax( {
-        url: '../../res/data/bearInfo.min.json',
-        dataType : 'json',
+        url: '../../res/data/bearInfo.csv',
+        dataType: 'text',
+        acync: true,
         success: function(data) {
-            for (var i=0; i<data.length; i++) {
-                add_marker(data[i]);
+            var csvDataArray = data.split('\n');
+            for (var i = 0; i < csvDataArray.length; i++) {
+                add_marker(csvDataArray[i].split(','));
             }
         },
         error: function(data) {
@@ -30,27 +33,36 @@ function load_spots() {
 }
 
 function add_marker(spot) {
-    var latlng = new google.maps.LatLng(spot.lat, spot.lng);
+    // spot
+    // 1:日時, 2:住所, 3:詳細, 4:緯度, 5:経度, 6:警戒レベル
 
     // TODO:レベルに応じたマーカーの表示
-
+    var latlng = new google.maps.LatLng(spot[4], spot[5]);
     var marker = new google.maps.Marker({
       position: latlng,
       map: googleMap,
     });
 
+    google.maps.event.addListener(marker, 'click', function() {
+        show_info_window(spot, marker);
+    });
+}
+
+function show_info_window(spot, marker) {
+    if (showInfoWindow) {
+        showInfoWindow.close();
+    }
+
     var infoContent = $('<div id="info-container" style="width:100%; height:100%;"><div id="info-date"></div><div id="info-place"></div><div id="info-detail"></div></div>');
-    infoContent.find('#info-date').text('日時：' + spot.date);
-    infoContent.find('#info-place').text('住所：' + spot.place);
-    infoContent.find('#info-detail').text('詳細：' + spot.detail);
+    infoContent.find('#info-date').text('日時：' + spot[1]);
+    infoContent.find('#info-place').text('住所：' + spot[2]);
+    infoContent.find('#info-detail').text('詳細：' + spot[3]);
 
     var infowindow = new google.maps.InfoWindow({
         content: infoContent.html()
     });
-
-    google.maps.event.addListener(marker, 'click', function() {
-        infowindow.open(googleMap, marker);
-    });
+    showInfoWindow = infowindow;
+    infowindow.open(googleMap, marker);
 }
 
 $(function(){
