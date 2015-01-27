@@ -1,18 +1,41 @@
 var googleMap = null;
 var showInfoWindow = null;
+var currentPositionMarker = null;
+var watchId = null;
+var lastTime = 0;
+
+var mapOptions = {
+    zoom: 14,
+    center: new google.maps.LatLng(36.565842, 136.658941),
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    mapTypeControl: false,
+    streetViewControl: false,
+};
+
+var watchPositionOptions = {
+   enableHighAccuracy: false,
+   timeout: 300000,
+   maximumAge: 0,
+};
 
 function init_map() {
-    googleMap = null;
+    // map初期化
+    if (!googleMap) {
+        googleMap = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    }
 
-    var mapOptions = {
-        zoom: 14,
-        center: new google.maps.LatLng(36.565842, 136.658941),
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-    };
-
-    googleMap = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
+    // スポット読み込み
     load_spots();
+
+    // 現在地表示&追跡
+    watchId　= navigator.geolocation.watchPosition(location_get_success, location_get_error, watchPositionOptions);
+
+    // 地図をドラッグした際は現在地の追跡を解除するように
+    google.maps.event.addListener(googleMap, 'dragend', function() {
+        if (watchId) {
+            navigator.geolocation.clearWatch(watchId);
+        }
+    });
 }
 
 function load_spots() {
@@ -65,6 +88,48 @@ function show_info_window(spot, marker) {
     infowindow.open(googleMap, marker);
 }
 
-$(function(){
+function location_get_success(position) {
+    // マーカーが存在していない場合は新規に生成、存在している場合は位置情報のみ更新
+    var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    if (!currentPositionMarker) {
+        var image = new google.maps.MarkerImage(
+            '../../res/images/bluedot.png',
+            null,
+            null,
+            new google.maps.Point( 8, 8 ),
+            new google.maps.Size( 17, 17 )
+        );
+
+        currentPositionMarker = new google.maps.Marker({
+            position: latlng,
+            map: googleMap,
+            flat: true,
+            icon: image,
+            optimized: false,
+            visible: true,
+            title: 'CurrentPosition'
+        });
+    } else {
+        currentPositionMarker.setPosition(latlng)
+    }
+
+    // mapの中心を現在地に
+    googleMap.setCenter(latlng);
+}
+
+function location_get_error(error) {
+   //エラーコードのメッセージを定義
+   var errorMessage = {
+      0: '原因不明のエラーが発生しました。',
+      1: '位置情報の取得が許可されませんでした。',
+      2: '位置情報が取得できませんでした。電波状態の良いところで再度お試し下さい。',
+      3: '位置情報の取得がタイムアウトしました。電波状態の良いところで再度お試し下さい。',
+   };
+
+   //エラーコードに合わせたエラー内容をアラート表示
+   alert(errorMessage[error.code]);
+}
+
+$(function() {
     init_map();
 });
