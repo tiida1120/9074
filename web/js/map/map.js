@@ -8,6 +8,9 @@ function apply_map() {
         longitude:36.579160
 
     };
+    
+    var zoom = 15
+    var title = "test"
 
     show_google_map('map-canvas', coordinates.longitude, coordinates.latitude, zoom, title);
 }
