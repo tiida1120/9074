@@ -81,19 +81,21 @@ function load_spots() {
 
 function add_marker(spot) {
     // spot
-    // 1:日時, 2:住所, 3:詳細, 4:緯度, 5:経度, 6:警戒レベル
+    // 1:日時, 2:住所, 3:詳細, 4:緯度, 5:経度, 6:警戒レベル,
+    // 7: LatLng オブジェクト, 8:現在地からの距離
 
     // レベルに合わせてマーカーの画像を変更
     var markerImage = new google.maps.MarkerImage(
-        get_icon_name(spot[6]),
+        get_marker_icon_name(spot[6]),
         null,
         null,
         new google.maps.Point(8, 8),
         new google.maps.Size(35, 35)
     );
 
+    var latLng = new google.maps.LatLng(spot[4], spot[5]);
     var marker = new google.maps.Marker({
-      position: new google.maps.LatLng(spot[4], spot[5]),
+      position: latLng,
       icon: markerImage,
       map: googleMap
     });
@@ -102,6 +104,9 @@ function add_marker(spot) {
     google.maps.event.addListener(marker, 'click', function() {
         show_info_window(spot, marker);
     });
+
+    // 距離判定用にオブジェクトを格納
+    spot[7] = latLng;
 
     // 配列に格納
     spotData.push(spot);
@@ -131,8 +136,11 @@ function location_get_success(position) {
     // マーカーが存在していない場合は新規に生成、存在している場合は位置情報のみ更新
     // 現在地の取得周期は不明。10秒に一回更新するくらいにしたい。
 
-    // TODO:一番近いスポットとの距離に合わせた現在地のマーカーの色変更
     var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+    // 現在地を基準にソート
+    spotData = get_sorted_spot_array(latlng, spotData);
+
     if (!currentPositionMarker) {
         var image = new google.maps.MarkerImage(
             '../../res/images/bluedot.png',
@@ -154,9 +162,6 @@ function location_get_success(position) {
     } else {
         currentPositionMarker.setPosition(latlng)
     }
-
-    // mapの中心を現在地に
-    googleMap.setCenter(latlng);
 }
 
 function location_get_error(error) {
