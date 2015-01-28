@@ -1,9 +1,16 @@
+// GoogleMap
 var googleMap = null;
-var showInfoWindow = null;
-var currentPositionMarker = null;
-var watchId = null;
-var lastTime = 0;
 
+// infoウィンドウ
+var showInfoWindow = null;
+
+// 現在地用のマーカー
+var currentPositionMarker = null;
+
+// 現在地追跡用のID
+var watchId = null;
+
+// GoogleMapのオプション
 var mapOptions = {
     zoom: 14,
     center: new google.maps.LatLng(36.565842, 136.658941),
@@ -12,11 +19,21 @@ var mapOptions = {
     streetViewControl: false,
 };
 
+// 現在地種取得のオプション
 var watchPositionOptions = {
    enableHighAccuracy: false,
    timeout: 300000,
    maximumAge: 0,
 };
+
+//エラーコードのメッセージを定義
+var errorMessage = {
+  0: '原因不明のエラーが発生しました。',
+  1: '位置情報の取得が許可されませんでした。',
+  2: '位置情報が取得できませんでした。電波状態の良いところで再度お試し下さい。',
+  3: '位置情報の取得がタイムアウトしました。電波状態の良いところで再度お試し下さい。',
+};
+
 
 function init_map() {
     // map初期化
@@ -31,6 +48,7 @@ function init_map() {
     watchId　= navigator.geolocation.watchPosition(location_get_success, location_get_error, watchPositionOptions);
 
     // 地図をドラッグした際は現在地の追跡を解除するように
+    // TODO:現在地追跡の復活方法
     google.maps.event.addListener(googleMap, 'dragend', function() {
         if (watchId) {
             navigator.geolocation.clearWatch(watchId);
@@ -58,12 +76,14 @@ function load_spots() {
 function add_marker(spot) {
     // spot
     // 1:日時, 2:住所, 3:詳細, 4:緯度, 5:経度, 6:警戒レベル
-
-    // TODO:レベルに応じたマーカーの表示
     var latlng = new google.maps.LatLng(spot[4], spot[5]);
+
+    // TODO:レベルに合わせた画像の表示
+    // csvから値は取れているので、あとはget_icon_name()の中の処理。
     var marker = new google.maps.Marker({
       position: latlng,
       map: googleMap,
+      icon: get_icon_name(spot[6])
     });
 
     google.maps.event.addListener(marker, 'click', function() {
@@ -90,6 +110,9 @@ function show_info_window(spot, marker) {
 
 function location_get_success(position) {
     // マーカーが存在していない場合は新規に生成、存在している場合は位置情報のみ更新
+    // 現在地の取得周期は不明。10秒に一回更新するくらいにしたい。
+
+    // TODO:一番近いスポットとの距離に合わせた現在地のマーカーの色変更
     var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
     if (!currentPositionMarker) {
         var image = new google.maps.MarkerImage(
@@ -118,14 +141,6 @@ function location_get_success(position) {
 }
 
 function location_get_error(error) {
-   //エラーコードのメッセージを定義
-   var errorMessage = {
-      0: '原因不明のエラーが発生しました。',
-      1: '位置情報の取得が許可されませんでした。',
-      2: '位置情報が取得できませんでした。電波状態の良いところで再度お試し下さい。',
-      3: '位置情報の取得がタイムアウトしました。電波状態の良いところで再度お試し下さい。',
-   };
-
    //エラーコードに合わせたエラー内容をアラート表示
    alert(errorMessage[error.code]);
 }
