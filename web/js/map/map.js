@@ -84,9 +84,17 @@ function add_marker(spot) {
     // 1:日時, 2:住所, 3:詳細, 4:緯度, 5:経度, 6:警戒レベル
 
     // レベルに合わせてマーカーの画像を変更
+    var markerImage = new google.maps.MarkerImage(
+        get_icon_name(spot[6]),
+        null,
+        null,
+        new google.maps.Point(8, 8),
+        new google.maps.Size(35, 35)
+    );
+
     var marker = new google.maps.Marker({
       position: new google.maps.LatLng(spot[4], spot[5]),
-      icon: get_icon_name(spot[6]),
+      icon: markerImage,
       map: googleMap
     });
 
@@ -130,8 +138,8 @@ function location_get_success(position) {
             '../../res/images/bluedot.png',
             null,
             null,
-            new google.maps.Point( 8, 8 ),
-            new google.maps.Size( 17, 17 )
+            new google.maps.Point(8, 8),
+            new google.maps.Size(17, 17)
         );
 
         currentPositionMarker = new google.maps.Marker({
