@@ -8,7 +8,10 @@ var showInfoWindow = null;
 var currentPositionMarker = null;
 
 // 現在地追跡用のID
-var watchId = null;
+var watchId;
+
+// スポットの配列
+var spotData = Array();
 
 // GoogleMapのオプション
 var mapOptions = {
@@ -34,6 +37,9 @@ var errorMessage = {
   3: '位置情報の取得がタイムアウトしました。電波状態の良いところで再度お試し下さい。',
 };
 
+$(function() {
+    init_map();
+});
 
 function init_map() {
     // map初期化
@@ -76,31 +82,36 @@ function load_spots() {
 function add_marker(spot) {
     // spot
     // 1:日時, 2:住所, 3:詳細, 4:緯度, 5:経度, 6:警戒レベル
-    var latlng = new google.maps.LatLng(spot[4], spot[5]);
 
-    // TODO:レベルに合わせた画像の表示
-    // csvから値は取れているので、あとはget_icon_name()の中の処理。
+    // レベルに合わせてマーカーの画像を変更
     var marker = new google.maps.Marker({
-      position: latlng,
-      map: googleMap,
-      icon: get_icon_name(spot[6])
+      position: new google.maps.LatLng(spot[4], spot[5]),
+      icon: get_icon_name(spot[6]),
+      map: googleMap
     });
 
+    // インフォウィンドウ表示のイベント追加
     google.maps.event.addListener(marker, 'click', function() {
         show_info_window(spot, marker);
     });
+
+    // 配列に格納
+    spotData.push(spot);
 }
 
 function show_info_window(spot, marker) {
+    // 表示しているウィンドウがあればクローズ
     if (showInfoWindow) {
         showInfoWindow.close();
     }
 
+    // 表示内容の調整
     var infoContent = $('<div id="info-container" style="width:100%; height:100%;"><div id="info-date"></div><div id="info-place"></div><div id="info-detail"></div></div>');
     infoContent.find('#info-date').text('日時：' + spot[1]);
     infoContent.find('#info-place').text('住所：' + spot[2]);
     infoContent.find('#info-detail').text('詳細：' + spot[3]);
 
+    // 表示処理
     var infowindow = new google.maps.InfoWindow({
         content: infoContent.html()
     });
@@ -144,7 +155,3 @@ function location_get_error(error) {
    //エラーコードに合わせたエラー内容をアラート表示
    alert(errorMessage[error.code]);
 }
-
-$(function() {
-    init_map();
-});
