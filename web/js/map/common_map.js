@@ -85,15 +85,21 @@ function show_google_map(canvas_id, lat, lng, zoom, title) {
                                                  icon: icon
                                                  });
             
+            addListenerPoint(marker,csvArray[i][4]);
+            
+        }
+        
+        function addListenerPoint(marker,content) {
+            
             google.maps.event.addListener(marker, "click", function() {
                                           
                                           var infowindow = new google.maps.InfoWindow({
-                                                                                      content: csvArray[i][4]
+                                                                                      content: content
                                                                                       });
                                           infowindow.open(googleMap, marker);
                                           });
-            
 
+            
         }
     }
 }
