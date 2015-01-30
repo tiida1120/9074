@@ -1,0 +1,28 @@
+@charset "utf-8";
+
+.ui-page {
+    background: url('../../res/images/top/haikei.jpg');
+}
+
+.ui-header,
+.ui-footer {
+    background: none;
+    border: none;
+}
+
+#popupPanel-popup {
+    right: 0 !important;
+    left: auto !important;
+}
+
+#popupPanel {
+    width: 300px;
+    padding-right: 30px;
+    border-left: 2px solid rgba(0,0,0,.1);
+    background: rgba(0,0,0,.8);
+    margin: -1px 0;
+}
+
+#popupPanel .ui-btn {
+    margin: 2em 15px;
+}

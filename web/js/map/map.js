@@ -10,7 +10,7 @@ var currentPositionMarker = null;
 // 現在地追跡用のID
 var watchId;
 
-// スポットの配列
+// クマのスポットの配列
 var bearSpotArray = Array();
 
 // 地図のデフォルト表示地点の座標
@@ -45,7 +45,6 @@ function BearSpot(csvData) {
     this.atLng = null;
     this.distance = null;
 }
-
 
 // エラーコードのメッセージを定義
 var errorMessage = {
