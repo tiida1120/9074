@@ -35,8 +35,7 @@ var watchPositionOptions = {
 // クマの出現ポイント
 function BearSpot(csvData) {
     // csvData
-    // 1:日時, 2:住所, 3:詳細, 4:緯度, 5:経度, 6:警戒レベル,
-    // 7: LatLng オブジェクト, 8:現在地からの距離
+    // 1:日時, 2:住所, 3:詳細, 4:緯度, 5:経度, 6:警戒レベル
     this.date = csvData[1];
     this.address = csvData[2];
     this.detail = csvData[3];
@@ -83,7 +82,7 @@ function init_map() {
 
 function load_spots() {
     // 非同期でcsvを読み込む。
-    // ajaxを使うのが正しいのかは不明
+    // ajaxを使うのが正しいのかは不明。
     $.ajax( {
         url: '../../res/data/bearInfo.csv',
         dataType: 'text',
