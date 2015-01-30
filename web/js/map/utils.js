@@ -60,16 +60,16 @@ function get_marker_icon_name(level) {
     var iconName = '';
     switch (parseInt(level, 10)) {
         case DANGER_LEVEL.ALERT:
-            icon_name = '../../res/images/redmarker.png';
+            icon_name = '../../res/images/marker/redmarker.png';
             break;
         case DANGER_LEVEL.WARN:
-            icon_name = '../../res/images/yellowmarker.png';
+            icon_name = '../../res/images/marker/yellowmarker.png';
             break;
         case DANGER_LEVEL.NORMAL:
-            icon_name = '../../res/images/bluemarker.png';
+            icon_name = '../../res/images/marker/bluemarker.png';
             break;
         default:
-            icon_name = '../../res/images/bluemarker.png';
+            icon_name = '../../res/images/marker/bluemarker.png';
             break;
     }
     return icon_name;
@@ -88,23 +88,23 @@ function get_current_icon_info(bearSpot) {
     switch (parseInt(bearSpot.level, 10)) {
         case DANGER_LEVEL.ALERT:
             if (distance < ALERT_DISTANCE) {
-                iconInfo = new IconInfo('../../res/images/reddot.png', 'CurrentPositionAlert');
+                iconInfo = new IconInfo('../../res/images/dot/reddot.png', 'CurrentPositionAlert');
             } else {
-                iconInfo = new IconInfo('../../res/images/yellowdot.png', 'CurrentPositionWarn');
+                iconInfo = new IconInfo('../../res/images/dot/yellowdot.png', 'CurrentPositionWarn');
             }
             break;
         case DANGER_LEVEL.WARN:
             if (distance < ALERT_DISTANCE) {
-                iconInfo = new IconInfo('../../res/images/yellowdot.png', 'CurrentPositionWarn');
+                iconInfo = new IconInfo('../../res/images/dot/yellowdot.png', 'CurrentPositionWarn');
             } else {
-                iconInfo = new IconInfo('../../res/images/bluedot.png', 'CurrentPositionNormal');
+                iconInfo = new IconInfo('../../res/images/dot/bluedot.png', 'CurrentPositionNormal');
             }
             break;
         case DANGER_LEVEL.NORMAL:
-            iconInfo = new IconInfo('../../res/images/bluedot.png', 'CurrentPositionNormal');
+            iconInfo = new IconInfo('../../res/images/dot/bluedot.png', 'CurrentPositionNormal');
             break;
         default:
-            iconInfo = new IconInfo('../../res/images/bluedot.png', 'CurrentPositionNormal');
+            iconInfo = new IconInfo('../../res/images/dot/bluedot.png', 'CurrentPositionNormal');
             break;
     }
     return iconInfo;
