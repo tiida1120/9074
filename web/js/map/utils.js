@@ -21,6 +21,15 @@ function create_maker_image(iconName, size) {
     );
 }
 
+function create_info_content(bearSpot) {
+    var infoContent = $('<div id="info-container" style="width:100%; height:100%;"><div id="info-date"></div><div id="info-place"></div><div id="info-detail"></div></div>');
+    infoContent.find('#info-date').text('日時：' + bearSpot.date);
+    infoContent.find('#info-place').text('住所：' + bearSpot.address);
+    infoContent.find('#info-detail').text('詳細：' + bearSpot.detail);
+
+    return infoContent.html();
+}
+
 function get_sorted_spot_array(currentlatlng, bearSpotArray) {
     var sortedArray = Array();
 
@@ -30,7 +39,7 @@ function get_sorted_spot_array(currentlatlng, bearSpotArray) {
         sortedArray.push(bearSpot);
      }
 
-     sortedArray.sort(
+    sortedArray.sort(
         function(a,b){
             var aDistance = a.distance;
             var bDistance = b.distance;

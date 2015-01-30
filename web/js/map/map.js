@@ -13,10 +13,13 @@ var watchId;
 // スポットの配列
 var bearSpotArray = Array();
 
+// 地図のデフォルト表示地点の座標
+var defailtLatlng = new google.maps.LatLng(36.565842, 136.658941);
+
 // GoogleMapのオプション
 var mapOptions = {
     zoom: 13,
-    center: new google.maps.LatLng(36.565842, 136.658941),
+    center: defailtLatlng,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     mapTypeControl: false,
     streetViewControl: false,
@@ -31,17 +34,16 @@ var watchPositionOptions = {
 
 // クマの出現ポイント
 function BearSpot(csvData) {
-    // spotData
+    // csvData
     // 1:日時, 2:住所, 3:詳細, 4:緯度, 5:経度, 6:警戒レベル,
     // 7: LatLng オブジェクト, 8:現在地からの距離
-
     this.date = csvData[1];
     this.address = csvData[2];
     this.detail = csvData[3];
     this.lat = csvData[4];
     this.lng = csvData[5];
     this.level = csvData[6];
-    this.LatLng = null;
+    this.atLng = null;
     this.distance = null;
 }
 
@@ -80,6 +82,8 @@ function init_map() {
 }
 
 function load_spots() {
+    // 非同期でcsvを読み込む。
+    // ajaxを使うのが正しいのかは不明
     $.ajax( {
         url: '../../res/data/bearInfo.csv',
         dataType: 'text',
@@ -102,7 +106,6 @@ function load_spots() {
 }
 
 function add_marker(bearSpot) {
-
     // レベルに合わせてマーカーの画像を変更
     var latLng = new google.maps.LatLng(bearSpot.lat, bearSpot.lng);
     var markerImage = create_maker_image(get_marker_icon_name(bearSpot.level), new google.maps.Size(35, 35));
@@ -117,6 +120,11 @@ function add_marker(bearSpot) {
         show_info_window(bearSpot, marker);
     });
 
+    // 現在地マーカー表示用の配列にpush
+    push_bear_spot(bearSpot, latLng)
+}
+
+function push_bear_spot(bearSpot, latLng) {
     // 距離判定用にLatLngオブジェクトを格納
     bearSpot.latLng = latLng;
 
@@ -130,18 +138,15 @@ function show_info_window(bearSpot, marker) {
         showInfoWindow.close();
     }
 
-    // 表示内容の調整
-    var infoContent = $('<div id="info-container" style="width:100%; height:100%;"><div id="info-date"></div><div id="info-place"></div><div id="info-detail"></div></div>');
-    infoContent.find('#info-date').text('日時：' + bearSpot.date);
-    infoContent.find('#info-place').text('住所：' + bearSpot.address);
-    infoContent.find('#info-detail').text('詳細：' + bearSpot.detail);
-
     // ウィンドウの表示
+    var infoContent = create_info_content(bearSpot);
     var infowindow = new google.maps.InfoWindow({
-        content: infoContent.html()
+        content: infoContent
     });
-    showInfoWindow = infowindow;
     infowindow.open(googleMap, marker);
+
+    // 表示しているウィンドウに設定
+    showInfoWindow = infowindow;
 }
 
 function location_get_success(position) {
@@ -151,9 +156,9 @@ function location_get_success(position) {
     var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
     bearSpotArray = get_sorted_spot_array(latlng, bearSpotArray);
 
-    // 最寄りのスポットに合わせてドットを変更。
+    // 最寄りのスポットに合わせてマーカーを変更。
     var iconInfo = get_current_icon_info(bearSpotArray[0]);
-    var image = create_maker_image(iconInfo.name, new google.maps.Size(17, 17));
+    var iconImage = create_maker_image(iconInfo.name, new google.maps.Size(17, 17));
 
     // マーカーが存在していない場合は新規に生成、存在している場合は位置情報のみ更新
     if (!currentPositionMarker) {
@@ -166,12 +171,13 @@ function location_get_success(position) {
         });
 
         // 初回はmapの中心を現在地に
-        googleMap.setCenter(latlng);
+        googleMap.panTo(latlng);
     } else {
         currentPositionMarker.setPosition(latlng);
     }
 
-    currentPositionMarker.setIcon(image);
+    // アイコン画像とタイトルの設定
+    currentPositionMarker.setIcon(iconImage);
     currentPositionMarker.setTitle(iconInfo.title);
 }
 
