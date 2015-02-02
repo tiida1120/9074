@@ -9,12 +9,14 @@
         <link href='http://fonts.googleapis.com/css?family=Maven+Pro:900,400' rel='stylesheet' type='text/css'>
         <link href="http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.css" rel="stylesheet" />
         <link href="../../css/top/top.css" rel="stylesheet" />
+        <link href="../../css/map/map.css" rel="stylesheet" />
 
-        <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="../../js/libs/jQuery/jquery-2.1.1.min.js"></script>
         <script src="http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.js"></script>
+        <script src="http://maps.googleapis.com/maps/api/js?v=3&libraries=geometry&sensor=true"></script>
 
-        <script src="../../js/top/top.js" type="text/javascript"></script>
-
+        <script src="../../js/map/map.js"></script>
+        <script src="../../js/map/utils.js"></script>
     </head>
     <body>
         <!--////////////////////////////// トップページ ////////////////////////////////////-->
@@ -26,37 +28,42 @@
                         <ul>
                             <li><a href="#kuma">9874とは</a></li>
                             <li><a href="#life">熊を知る</a></li>
-                            <li><a href="../map/index.html">クマップ</a></li>
-                            <li><a href="#void">クマ避け</a></li>
-                            <li><a href="#call">お問い合わせ</a></li>
+                            <li><a href="#map-page">クマップ</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
-
+            <img src="../../res/images/top/forest2.png">
             <div role="main" class="ui-content">
             </div>
 
             <div data-role="footer"　data-position="fixed">
+                <div id="tabs" data-role="navbar">
+                    <ul>
+                        <li><a href="#tel">クマを見かけたら</a></li>
+                    </ul>
+                </div>
                 <h1>TEAM 9074</h1>
             </div>
         </div>
 
-
         <!--////////////////////////////// 9874とは ////////////////////////////////////-->
         <div data-role="page" id="kuma" data-theme="b">
             <div data-role="header" data-add-back-btn="true" data-back-btn-text="HOME" data-position="fixed">
-                <img src="../../res/images/top/forest2.png">
                 <h1>自然との共生</h1>
             </div>
 
             <!--メインコンテンツ-->
             <div role="main" class="ui-content">
-                <h2>動物の被害</h2>
-                <p>近年、動物が人里に降りてきて、人を襲ったり、作物を食い荒らす被害が増えてきています。
-                今後ますます増加すると考えられます。そこで、私達と動物が互いに共生できる環境を構築しなくてはいけません。 </p>
-                <h2>9074とは</h2>
-                <p>まず、命の危険にさらされる確率が高いが、あまり対策されていない熊にフォーカスをあてました。９０７４は、まとまっていない熊の出没データを一つにし、地図上に可視化しています。そのデータを参考にして、熊の出没地域にはなるべく近づかないようにすることが重要です。 </p>
+                <div class="ui-body ui-body-a">
+                    <h2>動物の被害</h2>
+                    <p>近年、動物が人里に降りてきて、人を襲ったり、作物を食い荒らす被害が増えてきています。
+                    今後ますます増加すると考えられます。そこで、私達と動物が互いに共生できる環境を構築しなくてはいけません。 </p>
+                </div>
+                <div class="ui-body ui-body-a">
+                    <h2>9074とは</h2>
+                    <p>まず、命の危険にさらされる確率が高いが、あまり対策されていない熊にフォーカスをあてました。９０７４は、まとまっていない熊の出没データを一つにし、地図上に可視化しています。そのデータを参考にして、熊の出没地域にはなるべく近づかないようにすることが重要です。 </p>
+                </div>
             </div>
 
             <div data-role="footer" data-position="fixed">
@@ -68,22 +75,10 @@
         <!--////////////////////////////// 熊の生態 ////////////////////////////////////-->
         <div data-role="page" id="life" data-theme="b">
             <div data-role="header" data-add-back-btn="true" data-back-btn-text="HOME">
-                <img src="../../res/images/top/forest2.png">
                 <h1>熊の生態系</h1>
             </div>
 
             <div role="main" class="ui-content">
-                <!--タブの作成-->
-                <div id="tabs" data-role="tabs">
-                    <div data-role="navbar">
-                      <ul>
-                          <li><a href="#tab1" class="ui-btn-active">9074 - 熊に関する注意点</a></li>
-                          <li><a href="#tab2" >熊に出会ってしまったら...（落ち着き、ゆっくり後退する）</a></li>
-                          <li><a href="#tab3" >熊の生態</a></li>
-                      </ul>
-                    </div>
-                </div>
-
                 <!--タブ１の本文-->
                 <div id="tab1" class="ui-body ui-body-a">
                     <h2>出会わないために...（まず出会わないようにすることが大事）</h2>
@@ -109,15 +104,43 @@
                 </div>
 
             </div>
+
             <div data-role="footer" data-position="fixed">
               <h4>TEAM 9074</h4>
             </div>
         </div>
 
-        <!--////////////////////////////// クマよけ ////////////////////////////////////-->
-        <div data-role="page" id="void" data-theme="b">
+        <!--////////////////////////////// クマップ ////////////////////////////////////-->
+        <div data-role="page" id="map-page" data-theme="b">
             <div data-role="header" data-add-back-btn="true" data-back-btn-text="HOME">
-                <h1>コンテンツ1</h1>
+                <h1>クマップ</h1>
+            </div>
+
+            <div role="main" class="ui-content" id="map-canvas">
+            </div>
+
+            <div data-role="footer"　data-position="fixed">
+                <h1>TEAM 9074</h1>
+            </div>
+        </div>
+
+        <!--////////////////////////////// クマップ ////////////////////////////////////-->
+        <div data-role="page" id="tel" data-theme="b">
+            <div data-role="header" data-add-back-btn="true" data-back-btn-text="HOME">
+                <h1>クマを見かけたら</h1>
+            </div>
+
+            <div role="main" class="ui-content" id="map-canvas">
+                <div class="ui-body ui-body-a">
+                    <a href="tel:110">警察に電話</a>
+                </div>
+                <div class="ui-body ui-body-a">
+                    <a href="tel:076-220-2111">市役所に電話</a>
+                </div>
+            </div>
+
+            <div data-role="footer"　data-position="fixed">
+                <h1>TEAM 9074</h1>
             </div>
         </div>
     </body>

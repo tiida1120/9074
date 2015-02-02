@@ -55,7 +55,9 @@ var errorMessage = {
 };
 
 $(function() {
-    init_map();
+    $('#map-page').on('pageshow', function() {
+        init_map();
+    });
 });
 
 function init_map() {
