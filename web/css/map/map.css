@@ -11,7 +11,11 @@ html, body {
     width: 100%;
     height: 90%;
     margin: 0px;
-    padding: 0px
+    padding: 0px;
+}
+
+#info-date, #info-place, #info-detail {
+    color: #000000;
 }
 
 #map-canvas div.gmnoprint[title="CurrentPositionNormal"] {

@@ -85,7 +85,7 @@ function load_spots() {
     // 非同期でcsvを読み込む。
     // ajaxを使うのが正しいのかは不明。
     $.ajax( {
-        url: '../../res/data/bearInfo.csv',
+        url: './web/res/data/bearInfo.csv',
         dataType: 'text',
         acync: true,
         success: function(data) {
@@ -96,7 +96,7 @@ function load_spots() {
             }
 
             // テスト用
-            // add_marker(new BearSpot([251, '2015.01.30 00:00','テスト1', 'テスト1', 36.582651, 136.643537, 3]));
+            // add_marker(new BearSpot([251, '2015.01.30 00:00','テスト1', 'テスト1', 36.582651, 136.643537, 1]));
             // add_marker(new BearSpot([252, '2015.01.30 00:00','テスト2', 'テスト2', 36.592651, 136.653537, 1]));
         },
         error: function(data) {
